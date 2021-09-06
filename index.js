@@ -50,7 +50,7 @@ inquirer
 };
 
     viewDepartment = () => {
-        const sql = 'SELECT * FROM Department';
+        const sql = `SELECT * FROM Department`;
         connection.query(sql, (err, res) => {
             if (err) {
                 throw err;
@@ -58,12 +58,12 @@ inquirer
         res.json({
             message: 'Showing all departments',
         })
-        console.log(sql);
+        console.table(sql);
         })
     };
 
     viewRoles = () => {
-        const sql = 'SELECT * FROM Roles';
+        const sql = `SELECT * FROM Roles`;
         connection.query(sql, (err, res) =>{
             if (err) {
                 throw err;
@@ -75,8 +75,8 @@ inquirer
         })
     };
 
-    viewEmployess = () => {
-        const sql = 'SELECT * FROM Employee';
+    var viewEmployess = function() {
+        const sql = `SELECT * FROM Employee`;
         connection.query(sql, (err, res) => {
             if (err) {
                 throw err;
@@ -87,5 +87,88 @@ inquirer
         console.log(sql)
         })
     };
+
+    addDepartment = () => {
+        const errors = inputCheck(body, 'name');
+        if (errors) {
+          res.status(400).json({ error: errors });
+          return;
+        }
+        const sql = `INSERT INTO Department(name)
+        VALUES(?)`;
+        const params = [body.name];
+        connection.query(sql, params, (err, res) => {
+            if (err) {
+              res.status(400).json({ error: err.message });
+              return;
+            }
+            res.json({
+              message: 'Department added'
+            });
+            console.table(res)
+          })
+    }
+
+    addRole = () => {
+        const sql = `INSERT INTO Role(title, salary, department_id)
+        VALUES(?,?,?)`;
+        const params = [body.title, body.salary, body.department_id]
+        connection.query(sql, params,(err, res) => {
+            if (err) {
+                res.status(400).json({ error: err.message});
+                return;
+            }
+            res.json({
+                message: 'Role added'
+            });
+            console.table(res)
+        })
+
+    }
+
+    updateEmployee = () => {
+        connection.query("SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;", function(err, res) {
+            // console.log(res)
+             if (err) throw err
+             console.log(res)
+            inquirer.prompt([
+                  {
+                    name: "lastName",
+                    type: "rawlist",
+                    choices: function() {
+                      var lastName = [];
+                      for (var i = 0; i < res.length; i++) {
+                        lastName.push(res[i].last_name);
+                      }
+                      return lastName;
+                    },
+                    message: "What is the Employee's last name? ",
+                  },
+                  {
+                    name: "role",
+                    type: "rawlist",
+                    message: "What is the Employees new title? ",
+                    choices: selectRole()
+                  },
+              ]).then(function(val) {
+                var roleId = selectRole().indexOf(val.role) + 1
+                connection.query("UPDATE employee SET WHERE ?", 
+                {
+                  last_name: val.lastName
+                   
+                }, 
+                {
+                  role_id: roleId
+                   
+                }, 
+                function(err){
+                    if (err) throw err
+                    console.table(val)
+                })
+          
+            });
+          });
+        
+          }
 
     connection.connect();
