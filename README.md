@@ -20,3 +20,4 @@
 
 ![Screenshot (42)](https://user-images.githubusercontent.com/84150748/132263391-2e0d9274-7536-4ce9-b714-2fae6bd73408.png)
 
+Link to recorded video: https://drive.google.com/file/d/1w6sw6R1ibydtzjjesG-ja7MOjoDIPBdg/view?usp=sharing
