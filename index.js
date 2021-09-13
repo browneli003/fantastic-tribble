@@ -169,3 +169,5 @@ inquirer
     function updateRole() {
 
     }
+    
+connectionPrompt();
