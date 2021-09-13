@@ -1,12 +1,9 @@
 var inquirer = require('inquirer');
 const cTable = require('console.table');
-
-
 const connection = require('./config/connection')
 
 
-
-connection.connect = () => {
+function connectionPrompt() {
 inquirer
     .prompt([
         {
@@ -21,35 +18,33 @@ inquirer
               'Add a role',
               'Add an employee',
               'Update employee role',
+              'Exit'
           ]
         }
     ])
-    .then(() => {
-        if(choices === 'View all departments') {
+    .then(function(answer) {
+        if (answer.action === 'View all departments') {
             viewDepartment();
-        }
-        else if(choices === 'View all roles') {
+        } else if (answer.action === 'View all roles') {
             viewRoles();
-        }
-        else if(choices === 'View all employees') {
-            viewEmployess();
-        }
-        else if(choices === 'Add a department') {
+        } else if (answer.action === 'View all employees') {
+            viewEmployees();
+        } else if (answer.action === 'Add a department') {
             addDepartment();
-        }
-        else if(choices === 'Add a role') {
+        } else if (answer.action === 'Add a role') {
             addRole();
-        }
-        else if(choices === 'Add an employee') {
+        } else if (answer.action === 'Add an employee') {
             addEmployee();
+        } else if (answer.action === 'Update employee role') {
+            updateRole();
         }
-        else if(choices === 'Update employee role') {
-            updateEmployee();
+        else if (answer.action === 'Exit') {
+            connection.end();
         }
     })
 };
 
-    viewDepartment = () => {
+   function viewDepartment() {
         const sql = `SELECT * FROM Department`;
         connection.query(sql, (err, res) => {
             if (err) {
@@ -62,7 +57,7 @@ inquirer
         })
     };
 
-    viewRoles = () => {
+   function viewRoles() {
         const sql = `SELECT * FROM Roles`;
         connection.query(sql, (err, res) =>{
             if (err) {
@@ -75,7 +70,7 @@ inquirer
         })
     };
 
-    var viewEmployess = function() {
+    function viewEmployees() {
         const sql = `SELECT * FROM Employee`;
         connection.query(sql, (err, res) => {
             if (err) {
@@ -88,7 +83,7 @@ inquirer
         })
     };
 
-    addDepartment = () => {
+    function addDepartment() {
         const errors = inputCheck(body, 'name');
         if (errors) {
           res.status(400).json({ error: errors });
@@ -109,7 +104,7 @@ inquirer
           })
     }
 
-    addRole = () => {
+    function addRole() {
         const sql = `INSERT INTO Role(title, salary, department_id)
         VALUES(?,?,?)`;
         const params = [body.title, body.salary, body.department_id]
@@ -126,7 +121,7 @@ inquirer
 
     }
 
-    updateEmployee = () => {
+    function addEmployee() {
         connection.query("SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;", function(err, res) {
             // console.log(res)
              if (err) throw err
@@ -171,4 +166,6 @@ inquirer
         
           }
 
-    connection.connect();
+    function updateRole() {
+
+    }
